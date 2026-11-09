@@ -24,7 +24,7 @@ class RepositoryServiceProvider extends ServiceProvider
         if ($driver == 'Custom') {
             $namespace = config('modules.custom_driver');
         } else {
-            $namespace = 'Xannn94\Modules\Repositories\\'.$driver.'Repository';
+            $namespace = 'Xannn94\Modules\Repositories\\' . $driver . 'Repository';
         }
 
         $this->app->bind('Xannn94\Modules\Contracts\Repository', $namespace);

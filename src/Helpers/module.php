@@ -1,5 +1,7 @@
 <?php
 
+use Xannn94\Modules\Facades\Module;
+
 if (! function_exists('module_path')) {
     /**
      * Return the path to the given module file.
@@ -48,7 +50,7 @@ if (! function_exists('module_class')) {
     function module_class($module, $class)
     {
         $module    = Module::where('slug', $module);
-        $namespace = config('modules.namespace').$module['basename'];
+        $namespace = config('modules.namespace') . $module['basename'];
 
         return "{$namespace}\\{$class}";
     }

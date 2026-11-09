@@ -32,7 +32,7 @@ class GeneratorServiceProvider extends ServiceProvider
         ];
 
         foreach ($generators as $slug => $class) {
-            $this->app->singleton($slug, function ($app) use ($slug, $class) {
+            $this->app->singleton($slug, function ($app) use ($class) {
                 return $app[$class];
             });
 

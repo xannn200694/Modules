@@ -2,6 +2,7 @@
 
 namespace Xannn94\Modules\Database\Migrations;
 
+use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 use Illuminate\Database\Migrations\Migrator as BaseMigrator;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
@@ -20,11 +21,12 @@ class Migrator extends BaseMigrator
      * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
      * @param  \Illuminate\Filesystem\Filesystem  $files
      */
-    public function __construct($table,
-                                MigrationRepositoryInterface $repository,
-                                Resolver $resolver,
-                                Filesystem $files)
-    {
+    public function __construct(
+        $table,
+        MigrationRepositoryInterface $repository,
+        Resolver $resolver,
+        Filesystem $files
+    ) {
         $this->table = $table;
 
         parent::__construct($repository, $resolver, $files);
@@ -39,7 +41,6 @@ class Migrator extends BaseMigrator
      */
     public function rollback($paths = [], array $options = [])
     {
-        $this->notes = [];
         $rolledBack = [];
 
         $migrations = $this->getRanMigrations();
@@ -52,34 +53,37 @@ class Migrator extends BaseMigrator
             $this->requireFiles($files);
 
             $steps = Arr::get($options, 'step', 0);
-            if($steps == 0) {
+            if ($steps == 0) {
                 $steps = 1;
             }
 
-            $lastBatch = $this->repository->getLastBatchNumber();
+            /** @var DatabaseMigrationRepository $repository */
+            $repository = $this->repository;
+            $lastBatch = $repository->getLastBatchNumber();
             $stepDown = false;
 
             foreach ($migrations as $migration) {
                 $migration = (object) $migration;
 
-                if($lastBatch > $migration->batch && $stepDown) {
+                if ($lastBatch > $migration->batch && $stepDown) {
                     $steps--;
                     $stepDown = false;
                     $lastBatch = $migration->batch;
                 }
 
-                if($steps <= 0) {
+                if ($steps <= 0) {
                     break;
                 }
 
-                if(Arr::exists($files, $migration->migration)) {
+                if (Arr::exists($files, $migration->migration)) {
                     $rolledBack[] = $files[$migration->migration];
 
                     $stepDown = true;
 
                     $this->runDown(
                         $files[$migration->migration],
-                        $migration, Arr::get($options, 'pretend', false)
+                        $migration,
+                        Arr::get($options, 'pretend', false)
                     );
                 }
             }
@@ -97,5 +101,13 @@ class Migrator extends BaseMigrator
     {
         $query = $this->resolveConnection($this->connection)->table($this->table);
         return $query->orderBy('batch', 'desc')->orderBy('migration', 'desc')->get();
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function note($message)
+    {
+        $this->output?->writeln($message);
     }
 }

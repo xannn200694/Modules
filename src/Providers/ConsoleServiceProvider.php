@@ -97,7 +97,11 @@ class ConsoleServiceProvider extends ServiceProvider
     protected function registerMigrateResetCommand()
     {
         $this->app->singleton('command.module.migrate.reset', function ($app) {
-            return new \Xannn94\Modules\Console\Commands\ModuleMigrateResetCommand($app['modules'], $app['files'], $app['migrator']);
+            return new \Xannn94\Modules\Console\Commands\ModuleMigrateResetCommand(
+                $app['modules'],
+                $app['files'],
+                $app['migrator']
+            );
         });
 
         $this->commands('command.module.migrate.reset');

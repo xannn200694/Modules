@@ -5,6 +5,9 @@ namespace Xannn94\Modules\Repositories;
 use Xannn94\Modules\Contracts\Repository as RepositoryContract;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 abstract class Repository implements RepositoryContract
 {
@@ -38,7 +41,7 @@ abstract class Repository implements RepositoryContract
     /**
      * Get all module basenames.
      *
-     * @return array
+     * @return Collection
      */
     protected function getAllBasenames()
     {
@@ -60,7 +63,7 @@ abstract class Repository implements RepositoryContract
     /**
      * Get a module's manifest contents.
      *
-     * @param string $slug
+     * @param string|null $slug
      *
      * @return Collection|null
      */
@@ -74,7 +77,7 @@ abstract class Repository implements RepositoryContract
             return $collection;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -110,13 +113,13 @@ abstract class Repository implements RepositoryContract
      */
     public function getModulePath($slug)
     {
-        $module = studly_case(str_slug($slug));
+        $module = Str::studly(Str::slug($slug));
 
-        if(\File::exists($this->getPath()."/{$module}/")) {
-            return $this->getPath()."/{$module}/";
+        if (File::exists($this->getPath() . "/{$module}/")) {
+            return $this->getPath() . "/{$module}/";
         }
 
-        return $this->getPath()."/{$slug}/";
+        return $this->getPath() . "/{$slug}/";
     }
 
     /**
@@ -128,7 +131,7 @@ abstract class Repository implements RepositoryContract
      */
     protected function getManifestPath($slug)
     {
-        return $this->getModulePath($slug).'module.json';
+        return $this->getModulePath($slug) . 'module.json';
     }
 
     /**

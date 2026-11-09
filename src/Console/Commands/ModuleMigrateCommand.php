@@ -2,8 +2,8 @@
 
 namespace Xannn94\Modules\Console\Commands;
 
-use App;
 use Xannn94\Modules\Modules;
+use Illuminate\Support\Facades\App;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Migrations\Migrator;
@@ -58,7 +58,7 @@ class ModuleMigrateCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $this->prepareDatabase();
 
@@ -70,7 +70,9 @@ class ModuleMigrateCommand extends Command
             } elseif ($this->option('force')) {
                 return $this->migrate($module['slug']);
             } else {
-                return $this->error('Nothing to migrate.');
+                $this->error('Nothing to migrate.');
+
+                return;
             }
         } else {
             if ($this->option('force')) {
@@ -103,18 +105,13 @@ class ModuleMigrateCommand extends Command
                 $pretend = ['pretend' => $pretend];
             }
 
+            if (! $this->option('quiet')) {
+                $this->migrator->setOutput($this->output);
+            }
+
             $this->migrator->run($path, $pretend);
 
-            event($slug.'.module.migrated', [$module, $this->option()]);
-
-            // Once the migrator has run we will grab the note output and send it out to
-            // the console screen, since the migrator itself functions without having
-            // any instances of the OutputInterface contract passed into the class.
-            foreach ($this->migrator->getNotes() as $note) {
-                if (!$this->option('quiet')) {
-                    $this->line($note);
-                }
-            }
+            event($slug . '.module.migrated', [$module, $this->option()]);
 
             // Finally, if the "seed" option has been given, we will re-run the database
             // seed task to re-populate the database, which is convenient when adding
@@ -123,7 +120,9 @@ class ModuleMigrateCommand extends Command
                 $this->call('module:seed', ['module' => $slug, '--force' => true]);
             }
         } else {
-            return $this->error('Module does not exist.');
+            $this->error('Module does not exist.');
+
+            return;
         }
     }
 

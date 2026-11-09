@@ -2,6 +2,8 @@
 
 namespace Xannn94\Modules\Contracts;
 
+use Illuminate\Support\Collection;
+
 interface Repository
 {
     /**
@@ -75,9 +77,16 @@ interface Repository
      *
      * @param string $slug
      *
-     * @return Collection
+     * @return Collection|null
      */
     public function getManifest($slug);
+
+    /**
+     * Get modules namespace.
+     *
+     * @return string
+     */
+    public function getNamespace();
 
     /**
      * Returns the given module property.

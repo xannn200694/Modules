@@ -27,21 +27,25 @@ class MakeMigrationCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
-    public function fire()
+    public function handle()
     {
         $arguments = $this->argument();
         $option    = $this->option();
         $options   = [];
 
-        array_walk($option, function(&$value, $key) use (&$options) {
-            $options['--'.$key] = $value;
+        array_walk($option, function (&$value, $key) use (&$options) {
+            $options['--' . $key] = $value;
         });
 
         unset($arguments['slug']);
 
-        $options['--path'] = str_replace(realpath(base_path()), '', module_path($this->argument('slug'), 'Database/Migrations'));
+        $options['--path'] = str_replace(
+            realpath(base_path()),
+            '',
+            module_path($this->argument('slug'), 'Database/Migrations')
+        );
         $options['--path'] = ltrim($options['--path'], '/');
 
         return $this->call('make:migration', array_merge($arguments, $options));

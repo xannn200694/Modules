@@ -24,7 +24,7 @@ class ModulesServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/modules.php' => config_path('modules.php'),
+            __DIR__ . '/../config/modules.php' => config_path('modules.php'),
         ], 'config');
 
         $this->app['modules']->register();
@@ -36,7 +36,8 @@ class ModulesServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/modules.php', 'modules'
+            __DIR__ . '/../config/modules.php',
+            'modules'
         );
 
         $this->app->register(ConsoleServiceProvider::class);
@@ -54,7 +55,7 @@ class ModulesServiceProvider extends ServiceProvider
     /**
      * Get the services provided by the provider.
      *
-     * @return string
+     * @return array
      */
     public function provides()
     {

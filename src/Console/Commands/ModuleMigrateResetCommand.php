@@ -7,6 +7,7 @@ use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -64,7 +65,7 @@ class ModuleMigrateResetCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         if (!$this->confirmToProceed()) {
             return;
@@ -111,16 +112,18 @@ class ModuleMigrateResetCommand extends Command
         $migrations    = array_reverse($this->migrator->getMigrationFiles($migrationPath));
 
         if (count($migrations) == 0) {
-            return $this->error('Nothing to rollback.');
+            $this->error('Nothing to rollback.');
+
+            return;
         }
 
         foreach ($migrations as $migration) {
             $module = $this->module->where('slug', $slug);
 
-            $this->info('Migration: '.$migration);
+            $this->info('Migration: ' . $migration);
             $this->runDown($slug, $migration, $pretend);
 
-            event($slug.'.module.reset', [$module, $this->option()]);
+            event($slug . '.module.reset', [$module, $this->option()]);
         }
     }
 
@@ -128,7 +131,7 @@ class ModuleMigrateResetCommand extends Command
      * Run "down" a migration instance.
      *
      * @param string $slug
-     * @param object $migration
+     * @param string $migration
      * @param bool   $pretend
      */
     protected function runDown($slug, $migration, $pretend)
@@ -137,7 +140,7 @@ class ModuleMigrateResetCommand extends Command
         $file          = explode('/', $migration);
         $file          = end($file);
         $classFile     = implode('_', array_slice(explode('_', basename($migration, '.php')), 4));
-        $class         = studly_case($classFile);
+        $class         = Str::studly($classFile);
         $table         = $this->laravel['config']['database.migrations'];
 
         include $migration;

@@ -36,7 +36,7 @@ class MakeSeederCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/seeder.stub';
+        return __DIR__ . '/stubs/seeder.stub';
     }
 
     /**
@@ -47,7 +47,7 @@ class MakeSeederCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        return module_path($this->argument('slug'), 'Database/Seeds/'.$name.'.php');
+        return module_path($this->argument('slug'), 'Database/Seeds/' . $name . '.php');
     }
 
     /**
@@ -60,7 +60,7 @@ class MakeSeederCommand extends GeneratorCommand
     {
         return $name;
     }
-    
+
     /**
      * Replace namespace in seeder stub
      *

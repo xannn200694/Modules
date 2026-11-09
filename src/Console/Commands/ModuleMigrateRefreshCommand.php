@@ -30,7 +30,7 @@ class ModuleMigrateRefreshCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         if (!$this->confirmToProceed()) {
             return;
@@ -57,7 +57,7 @@ class ModuleMigrateRefreshCommand extends Command
         if (isset($slug)) {
             $module = $this->laravel['modules']->where('slug', $slug);
 
-            event($slug.'.module.refreshed', [$module, $this->option()]);
+            event($slug . '.module.refreshed', [$module, $this->option()]);
 
             $this->info('Module has been refreshed.');
         } else {

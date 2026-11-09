@@ -66,17 +66,16 @@ class MakeModuleCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
-        $this->container['slug']        = str_slug($this->argument('slug'));
-        $this->container['name']        = studly_case($this->container['slug']);
+        $this->container['slug']        = Str::slug($this->argument('slug'));
+        $this->container['name']        = Str::studly($this->container['slug']);
         $this->container['version']     = '1.0';
-        $this->container['description'] = 'This is the description for the '.$this->container['name'].' module.';
+        $this->container['description'] = 'This is the description for the ' . $this->container['name'] . ' module.';
 
         if ($this->option('quick')) {
             return $this->generate();
-        }
-        else {
+        } else {
             $this->displayHeader('make_module_introduction');
 
             $this->stepOne();
@@ -99,8 +98,6 @@ class MakeModuleCommand extends Command
                 'name'     => $this->container['name'] . 'Seeder'
 
             ]);
-
-
         }
 
         return "error creating module" . $this->container['slug'];
@@ -118,17 +115,20 @@ class MakeModuleCommand extends Command
         $this->container['name']        = $this->ask('Please enter the name of the module:', $this->container['name']);
         $this->container['slug']        = $this->ask('Please enter the slug for the module:', $this->container['slug']);
         $this->container['version']     = $this->ask('Please enter the module version:', $this->container['version']);
-        $this->container['description'] = $this->ask('Please enter the description of the module:', $this->container['description']);
-        $this->container['basename']    = studly_case($this->container['slug']);
-        $this->container['namespace']   = config('modules.namespace').$this->container['basename'];
+        $this->container['description'] = $this->ask(
+            'Please enter the description of the module:',
+            $this->container['description']
+        );
+        $this->container['basename']    = Str::studly($this->container['slug']);
+        $this->container['namespace']   = config('modules.namespace') . $this->container['basename'];
 
         $this->comment('You have provided the following manifest information:');
-        $this->comment('Name:                       '.$this->container['name']);
-        $this->comment('Slug:                       '.$this->container['slug']);
-        $this->comment('Version:                    '.$this->container['version']);
-        $this->comment('Description:                '.$this->container['description']);
-        $this->comment('Basename (auto-generated):  '.$this->container['basename']);
-        $this->comment('Namespace (auto-generated): '.$this->container['namespace']);
+        $this->comment('Name:                       ' . $this->container['name']);
+        $this->comment('Slug:                       ' . $this->container['slug']);
+        $this->comment('Version:                    ' . $this->container['version']);
+        $this->comment('Description:                ' . $this->container['description']);
+        $this->comment('Basename (auto-generated):  ' . $this->container['basename']);
+        $this->comment('Namespace (auto-generated): ' . $this->container['namespace']);
 
         if ($this->confirm('If the provided information is correct, type "yes" to generate.')) {
             $this->comment('Thanks! That\'s all we need.');
@@ -165,7 +165,7 @@ class MakeModuleCommand extends Command
 
         $progress->finish();
 
-        event($this->container['slug'].'.module.made');
+        event($this->container['slug'] . '.module.made');
 
         $this->info("\nModule generated successfully.");
     }
@@ -181,7 +181,7 @@ class MakeModuleCommand extends Command
 
         $pathMap   = config('modules.pathMap');
         $directory = module_path(null, $this->container['basename']);
-        $source    = __DIR__.'/../../../resources/stubs/module';
+        $source    = __DIR__ . '/../../../resources/stubs/module';
 
         $this->files->makeDirectory($directory);
 
@@ -221,8 +221,12 @@ class MakeModuleCommand extends Command
         }
 
 
-       /* $res = shell_exec('php artisan make:module:model ' . $this->container['slug'] . ' ' . $this->container['name']);
-        echo $res;*/
+        /*
+        $res = shell_exec(
+            'php artisan make:module:model ' . $this->container['slug'] . ' ' . $this->container['name']
+        );
+        echo $res;
+        */
     }
 
     /**
@@ -243,7 +247,7 @@ class MakeModuleCommand extends Command
      */
     protected function displayHeader($file = '', $level = 'info')
     {
-        $stub = $this->files->get(__DIR__.'/../../../resources/stubs/console/'.$file.'.stub');
+        $stub = $this->files->get(__DIR__ . '/../../../resources/stubs/console/' . $file . '.stub');
 
         return $this->$level($stub);
     }

@@ -13,7 +13,7 @@ trait MigrationTrait
     {
         $path = $this->getMigrationPath($module);
 
-        $migrations = $this->laravel['files']->glob($path.'*_*.php');
+        $migrations = $this->laravel['files']->glob($path . '*_*.php');
 
         foreach ($migrations as $migration) {
             $this->laravel['files']->requireOnce($migration);

@@ -8,14 +8,14 @@ use Closure;
 class IdentifyModule
 {
     /**
-     * @var Xannn94\Modules
+     * @var Modules
      */
     protected $module;
 
     /**
      * Create a new IdentifyModule instance.
      *
-     * @param Xannn94\Modules $module
+     * @param Modules $module
      */
     public function __construct(Modules $module)
     {

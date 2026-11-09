@@ -2,6 +2,9 @@
 
 namespace Xannn94\Modules\Repositories;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+
 class LocalRepository extends Repository
 {
     /**
@@ -80,7 +83,7 @@ class LocalRepository extends Repository
      */
     public function exists($slug)
     {
-        return $this->slugs()->contains(str_slug($slug));
+        return $this->slugs()->contains(Str::slug($slug));
     }
 
     /**
@@ -197,7 +200,7 @@ class LocalRepository extends Repository
      */
     public function enable($slug)
     {
-        return $this->set($slug.'::enabled', true);
+        return $this->set($slug . '::enabled', true);
     }
 
     /**
@@ -209,7 +212,7 @@ class LocalRepository extends Repository
      */
     public function disable($slug)
     {
-        return $this->set($slug.'::enabled', false);
+        return $this->set($slug . '::enabled', false);
     }
 
     /*
@@ -250,8 +253,6 @@ class LocalRepository extends Repository
             if (! $module->has('order')) {
                 $module->put('order', 9001);
             }
-
-            return $module;
         });
 
         $content = json_encode($modules->all(), JSON_PRETTY_PRINT);

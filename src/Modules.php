@@ -5,6 +5,9 @@ namespace Xannn94\Modules;
 use Xannn94\Modules\Contracts\Repository;
 use Illuminate\Foundation\Application;
 
+/**
+ * @mixin \Xannn94\Modules\Contracts\Repository
+ */
 class Modules
 {
     /**

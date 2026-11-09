@@ -45,13 +45,15 @@ class ModuleSeedCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $slug = $this->argument('slug');
 
         if (isset($slug)) {
             if (!$this->module->exists($slug)) {
-                return $this->error('Module does not exist.');
+                $this->error('Module does not exist.');
+
+                return;
             }
 
             if ($this->module->isEnabled($slug)) {
@@ -77,17 +79,17 @@ class ModuleSeedCommand extends Command
     /**
      * Seed the specific module.
      *
-     * @param string $module
+     * @param string $slug
      *
-     * @return array
+     * @return void
      */
     protected function seed($slug)
     {
         $module        = $this->module->where('slug', $slug);
         $params        = [];
         $namespacePath = $this->module->getNamespace();
-        $rootSeeder    = $module['name'].'DatabaseSeeder';
-        $fullPath      = $namespacePath.'\\'.$module['name'].'\Database\Seeds\\'.$rootSeeder;
+        $rootSeeder    = $module['name'] . 'DatabaseSeeder';
+        $fullPath      = $namespacePath . '\\' . $module['name'] . '\Database\Seeds\\' . $rootSeeder;
 
         if (class_exists($fullPath)) {
             if ($this->option('class')) {
@@ -106,7 +108,7 @@ class ModuleSeedCommand extends Command
 
             $this->call('db:seed', $params);
 
-            event($slug.'.module.seeded', [$module, $this->option()]);
+            event($slug . '.module.seeded', [$module, $this->option()]);
         }
     }
 

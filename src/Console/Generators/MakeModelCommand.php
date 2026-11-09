@@ -34,21 +34,23 @@ class MakeModelCommand extends GeneratorCommand
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return bool|null
      */
-    public function fire()
+    public function handle()
     {
-        if (parent::fire() !== false) {
-            if ($this->option('migration')) {
-                $table = Str::plural(Str::snake(class_basename($this->argument('name'))));
+        $created = parent::handle();
 
-                $this->call('make:module:migration', [
-                    'slug'     => $this->argument('slug'),
-                    'name'     => "create_{$table}_table",
-                    '--create' => $table
-                ]);
-            }
+        if ($created !== false && $this->option('migration')) {
+            $table = Str::plural(Str::snake(class_basename($this->argument('name'))));
+
+            $this->call('make:module:migration', [
+                'slug'     => $this->argument('slug'),
+                'name'     => "create_{$table}_table",
+                '--create' => $table
+            ]);
         }
+
+        return $created;
     }
 
     /**
@@ -58,7 +60,7 @@ class MakeModelCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/model.stub';
+        return __DIR__ . '/stubs/model.stub';
     }
 
     /**

@@ -50,12 +50,14 @@ class ModuleListCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $modules = $this->module->all();
 
         if (count($modules) == 0) {
-            return $this->error("Your application doesn't have any modules.");
+            $this->error("Your application doesn't have any modules.");
+
+            return;
         }
 
         $this->displayModules($this->getModules());
@@ -81,7 +83,7 @@ class ModuleListCommand extends Command
     /**
      * Returns module manifest information.
      *
-     * @param string $module
+     * @param array $module
      *
      * @return array
      */

@@ -2,11 +2,9 @@
 
 namespace Xannn94\Modules\Console;
 
-use Module;
 use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
-
 use Illuminate\Console\GeneratorCommand as LaravelGeneratorCommand;
 
 abstract class GeneratorCommand extends LaravelGeneratorCommand
@@ -29,7 +27,7 @@ abstract class GeneratorCommand extends LaravelGeneratorCommand
             $name = str_replace('/', '\\', $name);
         }
 
-        return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name);
+        return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')) . '\\' . $name);
     }
 
     /**

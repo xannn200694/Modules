@@ -26,7 +26,7 @@ class ModuleDisableCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $slug = $this->argument('slug');
 
@@ -35,7 +35,7 @@ class ModuleDisableCommand extends Command
 
             $module = $this->laravel['modules']->where('slug', $slug);
 
-            event($slug.'.module.disabled', [$module, null]);
+            event($slug . '.module.disabled', [$module, null]);
 
             $this->info('Module was disabled successfully.');
         } else {

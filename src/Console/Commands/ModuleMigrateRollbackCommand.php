@@ -4,15 +4,16 @@ namespace Xannn94\Modules\Console\Commands;
 
 use Xannn94\Modules\Modules;
 use Xannn94\Modules\Traits\MigrationTrait;
+use Xannn94\Modules\Database\Migrations\Migrator;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Illuminate\Database\Migrations\Migrator;
 
 class ModuleMigrateRollbackCommand extends Command
 {
-    use MigrationTrait, ConfirmableTrait;
+    use MigrationTrait;
+    use ConfirmableTrait;
 
     /**
      * The console command name.
@@ -59,7 +60,7 @@ class ModuleMigrateRollbackCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         if (!$this->confirmToProceed()) {
             return;
@@ -67,14 +68,13 @@ class ModuleMigrateRollbackCommand extends Command
 
         $this->migrator->setConnection($this->option('database'));
 
+        $this->migrator->setOutput($this->output);
+
         $paths = $this->getMigrationPaths();
         $this->migrator->rollback(
-            $paths, ['pretend' => $this->option('pretend'), 'step' => (int) $this->option('step')]
+            $paths,
+            ['pretend' => $this->option('pretend'), 'step' => (int) $this->option('step')]
         );
-
-        foreach ($this->migrator->getNotes() as $note) {
-            $this->output->writeln($note);
-        }
     }
 
     /**
