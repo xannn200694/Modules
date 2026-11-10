@@ -41,10 +41,16 @@ class MakeMigrationCommand extends Command
 
         unset($arguments['slug']);
 
+        $directory = module_path($this->argument('slug'), 'Infrastructure/Persistence/Migrations');
+
+        if (! $this->laravel['files']->isDirectory($directory)) {
+            $this->laravel['files']->makeDirectory($directory, 0755, true);
+        }
+
         $options['--path'] = str_replace(
             realpath(base_path()),
             '',
-            module_path($this->argument('slug'), 'Database/Migrations')
+            $directory
         );
         $options['--path'] = ltrim($options['--path'], '/');
 

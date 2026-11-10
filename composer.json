@@ -1,6 +1,6 @@
 {
     "name": "xannn94/modules",
-    "description": "Laravel 5 Modules",
+    "description": "Laravel 13 modules with Domain, Application and Infrastructure layers",
     "keywords": ["modules", "laravel", "xannn94"],
     "license": "MIT",
     "version": "1.0.0",

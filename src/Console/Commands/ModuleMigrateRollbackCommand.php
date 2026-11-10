@@ -113,10 +113,10 @@ class ModuleMigrateRollbackCommand extends Command
         $paths = [];
 
         if ($slug) {
-            $paths[] = module_path($slug, 'Database/Migrations');
+            $paths[] = module_migration_path($slug);
         } else {
             foreach ($this->module->all() as $module) {
-                $paths[] = module_path($module['slug'], 'Database/Migrations');
+                $paths[] = module_migration_path($module['slug']);
             }
         }
 

@@ -29,6 +29,6 @@ trait MigrationTrait
      */
     protected function getMigrationPath($module)
     {
-        return module_path($module, 'Database/Migrations');
+        return module_migration_path($module);
     }
 }

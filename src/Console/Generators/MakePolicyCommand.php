@@ -47,6 +47,6 @@ class MakePolicyCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return module_class($this->argument('slug'), 'Policies');
+        return module_class($this->argument('slug'), 'Infrastructure\\Http\\Policies');
     }
 }

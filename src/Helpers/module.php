@@ -55,3 +55,25 @@ if (! function_exists('module_class')) {
         return "{$namespace}\\{$class}";
     }
 }
+
+if (! function_exists('module_migration_path')) {
+    /**
+     * Return the migration directory for a module.
+     *
+     * A module that has the clean-architecture directory keeps that path.
+     * Older modules stay on Database/Migrations, including path-map rewrites.
+     *
+     * @param  string  $slug
+     * @return string
+     */
+    function module_migration_path($slug)
+    {
+        $modern = rtrim(module_path($slug), '/') . '/Infrastructure/Persistence/Migrations';
+
+        if (is_dir($modern)) {
+            return $modern;
+        }
+
+        return module_path($slug, 'Database/Migrations');
+    }
+}

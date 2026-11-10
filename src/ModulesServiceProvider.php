@@ -68,7 +68,14 @@ class ModulesServiceProvider extends ServiceProvider
         $files   = [];
 
         foreach ($modules as $module) {
-            $serviceProvider = module_class($module['slug'], 'Providers\\ModuleServiceProvider');
+            $serviceProvider = module_class(
+                $module['slug'],
+                'Infrastructure\\Providers\\ModuleServiceProvider'
+            );
+
+            if (! class_exists($serviceProvider)) {
+                $serviceProvider = module_class($module['slug'], 'Providers\\ModuleServiceProvider');
+            }
 
             if (class_exists($serviceProvider)) {
                 $files = array_merge($files, forward_static_call([$serviceProvider, 'compiles']));

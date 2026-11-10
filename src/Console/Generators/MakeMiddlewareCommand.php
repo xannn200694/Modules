@@ -47,6 +47,6 @@ class MakeMiddlewareCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return module_class($this->argument('slug'), 'Http\\Middleware');
+        return module_class($this->argument('slug'), 'Infrastructure\\Http\\Middleware');
     }
 }

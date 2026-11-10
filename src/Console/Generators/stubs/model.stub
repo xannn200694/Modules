@@ -1,17 +1,9 @@
 <?php
-namespace App\Modules\DummyClass\Models;
 
-use App\Models\Model;
-use Kyslik\ColumnSortable\Sortable;
-use Illuminate\Notifications\Notifiable;
+namespace DummyNamespace;
 
+use Illuminate\Database\Eloquent\Model;
 
 class DummyClass extends Model
 {
-    use Notifiable, Sortable;
-
-    public function scopeOrder($query){
-
-        return $query;
-    }
 }

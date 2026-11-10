@@ -47,6 +47,6 @@ class MakeProviderCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return module_class($this->argument('slug'), 'Providers');
+        return module_class($this->argument('slug'), 'Infrastructure\\Providers');
     }
 }

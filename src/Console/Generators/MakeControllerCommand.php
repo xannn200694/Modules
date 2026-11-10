@@ -52,6 +52,6 @@ class MakeControllerCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return module_class($this->argument('slug'), 'Http\\Controllers');
+        return module_class($this->argument('slug'), 'Infrastructure\\Http\\Controllers');
     }
 }

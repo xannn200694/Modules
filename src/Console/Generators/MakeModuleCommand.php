@@ -74,33 +74,16 @@ class MakeModuleCommand extends Command
         $this->container['description'] = 'This is the description for the ' . $this->container['name'] . ' module.';
 
         if ($this->option('quick')) {
-            return $this->generate();
-        } else {
-            $this->displayHeader('make_module_introduction');
+            $this->fillDerived();
+            $this->generate();
 
-            $this->stepOne();
-
-            $this->call('make:module:model', [
-                'slug'     => $this->container['slug'],
-                'name'     => $this->container['name'],
-            ]);
-
-            $table = Str::plural(Str::snake(class_basename($this->container['slug'])));
-
-            $this->call('make:module:migration', [
-                'slug'     => $this->container['slug'],
-                'name'     => "create_{$table}_table",
-                '--create' => $table
-            ]);
-
-            $this->call('make:module:seeder', [
-                'slug'     => $this->container['slug'],
-                'name'     => $this->container['name'] . 'Seeder'
-
-            ]);
+            return self::SUCCESS;
         }
 
-        return "error creating module" . $this->container['slug'];
+        $this->displayHeader('make_module_introduction');
+        $this->stepOne();
+
+        return self::SUCCESS;
     }
 
     /**
@@ -119,8 +102,7 @@ class MakeModuleCommand extends Command
             'Please enter the description of the module:',
             $this->container['description']
         );
-        $this->container['basename']    = Str::studly($this->container['slug']);
-        $this->container['namespace']   = config('modules.namespace') . $this->container['basename'];
+        $this->fillDerived();
 
         $this->comment('You have provided the following manifest information:');
         $this->comment('Name:                       ' . $this->container['name']);
@@ -194,7 +176,7 @@ class MakeModuleCommand extends Command
 
         foreach ($sourceFiles as $file) {
             $contents = $this->replacePlaceholders($file->getContents());
-            $subPath = $file->getRelativePathname();
+            $subPath = $this->replacePlaceholders($file->getRelativePathname());
 
 
             if (!empty($pathMap)) {
@@ -255,23 +237,43 @@ class MakeModuleCommand extends Command
     protected function replacePlaceholders($contents)
     {
         $find = [
+            'DummySnakePlural',
+            'DummyPlural',
+            'DummyList',
             'DummyBasename',
             'DummyNamespace',
             'DummyName',
             'DummySlug',
             'DummyVersion',
-            'DummyDescription'
+            'DummyDescription',
         ];
 
         $replace = [
+            $this->container['snakePlural'],
+            $this->container['plural'],
+            $this->container['list'],
             $this->container['basename'],
             $this->container['namespace'],
             $this->container['name'],
             $this->container['slug'],
             $this->container['version'],
-            $this->container['description']
+            $this->container['description'],
         ];
 
         return str_replace($find, $replace, $contents);
+    }
+
+    /**
+     * Fill names that are derived from the slug.
+     *
+     * @return void
+     */
+    private function fillDerived()
+    {
+        $this->container['basename'] = Str::studly($this->container['slug']);
+        $this->container['namespace'] = config('modules.namespace') . $this->container['basename'];
+        $this->container['plural'] = Str::plural($this->container['basename']);
+        $this->container['list'] = 'List' . $this->container['plural'];
+        $this->container['snakePlural'] = Str::plural(Str::snake($this->container['basename']));
     }
 }

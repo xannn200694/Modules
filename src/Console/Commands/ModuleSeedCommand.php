@@ -89,7 +89,14 @@ class ModuleSeedCommand extends Command
         $params        = [];
         $namespacePath = $this->module->getNamespace();
         $rootSeeder    = $module['name'] . 'DatabaseSeeder';
-        $fullPath      = $namespacePath . '\\' . $module['name'] . '\Database\Seeds\\' . $rootSeeder;
+        $qualified     = $namespacePath . '\\' . $module['name'];
+        $modernDir     = rtrim(module_path($slug), '/') . '/Infrastructure/Persistence/Seeders';
+
+        if (is_dir($modernDir)) {
+            $fullPath = $qualified . '\\Infrastructure\\Persistence\\Seeders\\' . $rootSeeder;
+        } else {
+            $fullPath = $qualified . '\\Database\\Seeds\\' . $rootSeeder;
+        }
 
         if (class_exists($fullPath)) {
             if ($this->option('class')) {

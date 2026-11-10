@@ -47,6 +47,6 @@ class MakeRequestCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return module_class($this->argument('slug'), 'Http\\Requests');
+        return module_class($this->argument('slug'), 'Infrastructure\\Http\\Requests');
     }
 }

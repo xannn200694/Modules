@@ -47,7 +47,7 @@ class MakeSeederCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        return module_path($this->argument('slug'), 'Database/Seeds/' . $name . '.php');
+        return module_path($this->argument('slug'), 'Infrastructure/Persistence/Seeders/' . $name . '.php');
     }
 
     /**
@@ -69,6 +69,6 @@ class MakeSeederCommand extends GeneratorCommand
      */
     protected function getNamespace($name)
     {
-        return module_class($this->argument('slug'), 'Database\Seeds');
+        return module_class($this->argument('slug'), 'Infrastructure\\Persistence\\Seeders');
     }
 }

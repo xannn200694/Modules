@@ -110,6 +110,44 @@ class ModuleBootTest extends TestCase
         $this->assertSame(['provider:Alpha'], $log);
     }
 
+    public function test_infrastructure_provider_is_registered(): void
+    {
+        $log = $this->boot([
+            'Infra' => $this->module('infra', ['enabled' => true], [], 'infrastructure'),
+        ]);
+
+        $this->assertSame(['provider:Infra'], $log);
+        $this->assertTrue($this->app->providerIsLoaded(
+            'Modules\\Infra\\Infrastructure\\Providers\\ModuleServiceProvider'
+        ));
+    }
+
+    public function test_legacy_provider_is_registered_when_infrastructure_is_absent(): void
+    {
+        $log = $this->boot([
+            'LegacyOnly' => $this->module('legacy-only', ['enabled' => true], [], 'legacy'),
+        ]);
+
+        $this->assertSame(['provider:LegacyOnly'], $log);
+        $this->assertTrue($this->app->providerIsLoaded('Modules\\LegacyOnly\\Providers\\ModuleServiceProvider'));
+        $this->assertFalse($this->app->providerIsLoaded(
+            'Modules\\LegacyOnly\\Infrastructure\\Providers\\ModuleServiceProvider'
+        ));
+    }
+
+    public function test_infrastructure_provider_wins_when_both_exist(): void
+    {
+        $log = $this->boot([
+            'BothLayers' => $this->module('both-layers', ['enabled' => true], [], 'both'),
+        ]);
+
+        $this->assertSame(['provider:BothLayers'], $log);
+        $this->assertTrue($this->app->providerIsLoaded(
+            'Modules\\BothLayers\\Infrastructure\\Providers\\ModuleServiceProvider'
+        ));
+        $this->assertFalse($this->app->providerIsLoaded('Modules\\BothLayers\\Providers\\ModuleServiceProvider'));
+    }
+
     public function test_missing_provider_is_skipped_and_boot_continues(): void
     {
         $log = $this->boot([
@@ -250,7 +288,13 @@ class ModuleBootTest extends TestCase
      * @param  array<string, bool|string>  $files
      * @return array<string, mixed>
      */
-    private function module(string $slug, array $cache, array $manifest, bool $provider, array $files = []): array
+    private function module(
+        string $slug,
+        array $cache,
+        array $manifest,
+        bool|string $provider,
+        array $files = []
+    ): array
     {
         return [
             'slug' => $slug,
@@ -294,9 +338,9 @@ class ModuleBootTest extends TestCase
             ], $module['manifest']);
             file_put_contents($root.'/module.json', json_encode($manifest, JSON_PRETTY_PRINT));
 
-            if ($module['provider']) {
-                $namespace = 'Modules\\'.$basename.'\\Providers';
-                $dir = $root.'/Providers';
+            foreach ($this->providerLocations($module['provider']) as $relative) {
+                $namespace = 'Modules\\'.$basename.'\\'.str_replace('/', '\\', $relative);
+                $dir = $root.'/'.$relative;
                 if (! is_dir($dir)) {
                     mkdir($dir, 0777, true);
                 }
@@ -338,6 +382,19 @@ class ModuleBootTest extends TestCase
         }
 
         return $document;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function providerLocations(bool|string $provider): array
+    {
+        return match ($provider) {
+            true, 'legacy' => ['Providers'],
+            'infrastructure' => ['Infrastructure/Providers'],
+            'both' => ['Infrastructure/Providers', 'Providers'],
+            default => [],
+        };
     }
 
     private function providerSource(string $namespace, string $basename): string
