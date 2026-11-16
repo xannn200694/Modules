@@ -23,15 +23,4 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->bind(DummyBasenameRepository::class, EloquentDummyBasenameRepository::class);
     }
-
-    /**
-     * Bootstrap the module services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->loadViewsFrom(__DIR__ . '/../View/Views', 'DummySlug');
-        $this->loadTranslationsFrom(__DIR__ . '/../View/Lang', 'DummySlug');
-    }
 }

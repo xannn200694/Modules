@@ -47,9 +47,8 @@ User/
       Eloquent/UserModel.php
       EloquentUserRepository.php
       Migrations/ Factories/ Seeders/
-    Http/          контроллеры, запросы, middleware, маршруты
+    Http/          контроллеры, запросы, middleware, маршрут API
     Providers/     ModuleServiceProvider, RouteServiceProvider
-    View/          представления и переводы
     Config/        menu.php, settings.php
 ```
 

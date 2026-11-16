@@ -108,13 +108,17 @@ class ModuleScaffoldTest extends TestCase
         $this->assertFileExists($root.'/Infrastructure/Persistence/Eloquent/'.$basename.'Model.php');
         $this->assertFileExists($root.'/Infrastructure/Persistence/Eloquent'.$basename.'Repository.php');
         $this->assertFileExists($root.'/Infrastructure/Providers/ModuleServiceProvider.php');
-        $this->assertFileExists($root.'/Infrastructure/Http/Routes/web.php');
-        $this->assertFileExists($root.'/Infrastructure/Http/Controllers/Admin/IndexController.php');
+        $this->assertFileExists($root.'/Infrastructure/Http/Routes/api.php');
         $this->assertFileExists($root.'/Infrastructure/Config/menu.php');
         $this->assertFileExists($root.'/Infrastructure/Config/settings.php');
-        $this->assertFileExists($root.'/Infrastructure/View/Views/index.blade.php');
         $this->assertDirectoryExists($root.'/Infrastructure/Persistence/Factories');
         $this->assertDirectoryExists($root.'/Infrastructure/Persistence/Seeders');
+        $this->assertDirectoryDoesNotExist($root.'/Infrastructure/View');
+        $this->assertDirectoryDoesNotExist($root.'/Infrastructure/Http/ViewComposers');
+        $this->assertDirectoryDoesNotExist($root.'/Infrastructure/Http/Controllers/Admin');
+        $this->assertFileDoesNotExist($root.'/Infrastructure/Http/Routes/web.php');
+        $this->assertSame([], $this->findBySuffix($root, '.blade.php'));
+        $this->assertSame([], $this->findBySuffix($root, '.css'));
 
         $migration = (string) file_get_contents(
             $root.'/Infrastructure/Persistence/Migrations/2026_01_01_000000_create_'.$table.'_table.php'
@@ -128,14 +132,21 @@ class ModuleScaffoldTest extends TestCase
             'namespace App\\Modules\\'.$basename.'\\Infrastructure\\Providers;',
             $provider
         );
+        $this->assertStringNotContainsString('loadViewsFrom', $provider);
+        $this->assertStringNotContainsString('loadTranslationsFrom', $provider);
 
         $controller = (string) file_get_contents($root.'/Infrastructure/Http/Controllers/IndexController.php');
         $this->assertStringContainsString($list.'UseCase', $controller);
+        $this->assertStringContainsString('response()->json', $controller);
         $this->assertStringNotContainsString($basename.'Model', $controller);
         $this->assertStringNotContainsString('::query(', $controller);
+        $this->assertStringNotContainsString('view(', $controller);
 
-        $web = (string) file_get_contents($root.'/Infrastructure/Http/Routes/web.php');
-        $this->assertStringContainsString('Route::localizedGroup', $web);
+        $api = (string) file_get_contents($root.'/Infrastructure/Http/Routes/api.php');
+        $this->assertStringContainsString('IndexController', $api);
+
+        $menu = (string) file_get_contents($root.'/Infrastructure/Config/menu.php');
+        $this->assertStringNotContainsString('trans(', $menu);
 
         foreach (['Http', 'Models', 'Database', 'Providers', 'Routes', 'Resources'] as $legacy) {
             $this->assertDirectoryDoesNotExist($root.'/'.$legacy);
@@ -188,6 +199,25 @@ class ModuleScaffoldTest extends TestCase
         $this->assertSame(2, $result->total);
         $this->assertSame('Ada', $result->items[0]['name']);
         $this->assertSame('ada@example.com', $result->items[0]['email']);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function findBySuffix(string $root, string $suffix): array
+    {
+        $found = [];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && str_ends_with($file->getFilename(), $suffix)) {
+                $found[] = $file->getPathname();
+            }
+        }
+
+        return $found;
     }
 
     private function requireOnce(string $path): void

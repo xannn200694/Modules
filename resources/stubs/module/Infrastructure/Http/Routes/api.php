@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use DummyNamespace\Infrastructure\Http\Controllers\IndexController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/DummySlug', function (Request $request) {
-    // return $request->DummySlug();
-})->middleware('auth:api');
+Route::get('/DummySlug', [IndexController::class, 'index']);
